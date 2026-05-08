@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Évaluation de niveau – Mixologie Les Confiotes</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #111827;
+      --card: rgba(255,255,255,0.07);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #f8fafc;
+      --muted: rgba(248,250,252,0.72);
+      --line: rgba(255,255,255,0.14);
+      --accent: #f59e0b;
+      --accent2: #22c55e;
+      --danger: #ef4444;
+      --radius: 22px;
+      --shadow: 0 20px 50px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(245,158,11,.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(34,197,94,.14), transparent 24%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .hero, .section, .question, .result-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(245,158,11,.16), rgba(255,255,255,.04));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      right: -80px;
+      bottom: -120px;
+      background: radial-gradient(circle, rgba(245,158,11,.22), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .sub {
+      max-width: 980px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      border-radius: 16px;
+      padding: 12px 16px;
+      color: #0b1020;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      box-shadow: 0 12px 24px rgba(245,158,11,.18);
+      font-weight: 800;
+      transition: transform .15s ease, filter .15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    button.secondary {
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 20px;
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .mini {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .mini .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .mini .value {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .summary-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .progress-wrap {
+      height: 12px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #fde68a, #f59e0b, #22c55e);
+      border-radius: 999px;
+      transition: width .3s ease;
+    }
+
+    .quiz {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .question {
+      padding: 18px;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .qnum {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      color: #fde68a;
+      margin-bottom: 6px;
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .qtext {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .theme-tag {
+      flex-shrink: 0;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(245,158,11,.14);
+      color: #fde68a;
+      border: 1px solid rgba(245,158,11,.28);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .opt:hover {
+      background: rgba(255,255,255,.07);
+      transform: translateY(-1px);
+    }
+
+    .opt input {
+      margin-top: 4px;
+      accent-color: var(--accent);
+      transform: scale(1.12);
+      flex-shrink: 0;
+    }
+
+    .opt span {
+      line-height: 1.45;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback.good {
+      display: block;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.22);
+      color: #dcfce7;
+    }
+
+    .feedback.bad {
+      display: block;
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.22);
+      color: #fee2e2;
+    }
+
+    .results {
+      margin-top: 18px;
+      display: none;
+      gap: 14px;
+    }
+
+    .results.active {
+      display: grid;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .result-card {
+      padding: 18px;
+    }
+
+    .score-big {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 60px);
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .score-sub {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f59e0b, #22c55e);
+      transition: width .4s ease;
+    }
+
+    .advice {
+      display: grid;
+      gap: 10px;
+    }
+
+    .advice-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      line-height: 1.5;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .small-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 920px) {
+      .stats-grid,
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .question-header {
+        flex-direction: column;
+      }
+
+      .theme-tag {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Les Confiotes • Préformation mixologie</div>
+      <h1>Évaluation de niveau avant la formation</h1>
+      <p class="sub">
+        Ce quiz permet de situer chaque mixologue avant le démarrage de la formation :
+        techniques de mixologie, présentation, tenue du bar, hygiène, relation client,
+        marketing et connaissances générales.
+      </p>
+      <div class="toolbar">
+        <button id="topSubmit">Corriger les réponses</button>
+        <button id="scrollQuiz" class="secondary">Aller au quiz</button>
+        <button id="resetBtn" class="secondary">Réinitialiser</button>
+      </div>
+      <div class="progress-wrap" aria-hidden="true">
+        <div id="progress" class="progress"></div>
+      </div>
+      <div class="small-note">
+        Certaines questions ont 1 seule bonne réponse, d’autres 2 ou 3. Les propositions sont mélangées à chaque chargement.
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Consignes d’évaluation</h2>
+      <p class="muted">
+        Coche toutes les réponses que tu juges justes. Le score est calculé globalement et par thème.
+        Après correction, tu obtiendras une lecture claire des forces et des axes à renforcer avant la formation.
+      </p>
+
+      <div class="stats-grid">
+        <div class="mini">
+          <div class="label">Questions</div>
+          <div class="value">30</div>
+        </div>
+        <div class="mini">
+          <div class="label">Thèmes</div>
+          <div class="value">7</div>
+        </div>
+        <div class="mini">
+          <div class="label">Format</div>
+          <div class="value">QCM</div>
+        </div>
+      </div>
+
+      <h3 style="margin: 18px 0 10px;">Dimensions évaluées</h3>
+      <div id="themePills" class="summary-pills"></div>
+    </section>
+
+    <main class="section">
+      <h2>Quiz</h2>
+      <div id="quiz" class="quiz"></div>
+
+      <div class="footer-actions">
+        <button id="bottomSubmit">Corriger les réponses</button>
+        <button id="backTop" class="secondary">Retour en haut</button>
+      </div>
+
+      <div id="results" class="results">
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>Score global</h3>
+            <p id="globalScore" class="score-big">—</p>
+            <p id="globalLevel" class="score-sub"></p>
+            <p id="globalDesc" class="score-sub"></p>
+          </div>
+
+          <div class="result-card">
+            <h3>Répartition par thème</h3>
+            <div id="themeBars" class="bars"></div>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <h3>Ce qu’il faut travailler en priorité</h3>
+            <div id="advice" class="advice"></div>
+          </div>
+
+          <div class="result-card">
+            <h3>Lecture rapide</h3>
+            <div id="quickRead"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const QUIZ = [
+      {
+        theme: "Mixologie",
+        question: "Pourquoi utilise-t-on un shaker ?",
+        options: [
+          "Pour refroidir et mélanger le cocktail",
+          "Pour ajouter de la mousse artificielle",
+          "Pour diluer légèrement avec la glace",
+          "Pour remplacer le verre de service"
+        ],
+        correct: [0, 2],
+        explain: "Le shaker sert à refroidir, mélanger et contrôler la dilution. Il ne remplace pas le verre de service."
+      },
+      {
+        theme: "Mixologie",
+        question: "Quel outil permet de mesurer précisément les doses ?",
+        options: [
+          "Le muddler",
+          "Le jigger",
+          "Le strainer",
+          "La cuillère de bar"
+        ],
+        correct: [1],
+        explain: "Le jigger est le doseur du barman : il permet une mesure précise et régulière."
+      },
+      {
+        theme: "Mixologie",
+        question: "Dans quel cas utilise-t-on la technique du muddle ?",
+        options: [
+          "Pour filtrer un cocktail",
+          "Pour extraire les arômes",
+          "Pour écraser délicatement fruits ou herbes",
+          "Pour incorporer du gaz"
+        ],
+        correct: [1, 2],
+        explain: "Le muddle sert à écraser doucement certains ingrédients pour libérer jus et arômes."
+      },
+      {
+        theme: "Mixologie",
+        question: "Quel est l’objectif principal du strainer ?",
+        options: [
+          "Refroidir le verre",
+          "Conserver une texture propre",
+          "Ajouter de la texture",
+          "Filtrer glace ou résidus"
+        ],
+        correct: [1, 3],
+        explain: "Le strainer retient la glace et les résidus pour laisser passer le liquide seul."
+      },
+      {
+        theme: "Mixologie",
+        question: "Pourquoi faut-il éviter d’écraser trop fort la menthe ?",
+        options: [
+          "Elle devient amère",
+          "Elle chauffe le cocktail",
+          "Elle perd sa couleur",
+          "Elle libère trop de chlorophylle"
+        ],
+        correct: [0, 3],
+        explain: "Si l’on écrase trop la menthe, on libère de l’amertume et des notes végétales désagréables."
+      },
+      {
+        theme: "Mixologie",
+        question: "Quel cocktail utilise généralement un blender ?",
+        options: [
+          "Margarita",
+          "Mojito",
+          "Pina Colada",
+          "Negroni"
+        ],
+        correct: [2],
+        explain: "La Pina Colada est classiquement préparée au blender."
+      },
+      {
+        theme: "Mixologie",
+        question: "Un cocktail équilibré repose souvent sur :",
+        options: [
+          "Une très forte teneur en alcool",
+          "L’équilibre sucre/acidité",
+          "La température",
+          "Le hasard"
+        ],
+        correct: [1, 2],
+        explain: "L’équilibre gustatif repose notamment sur la relation entre sucre, acidité et température de service."
+      },
+
+      {
+        theme: "Présentation",
+        question: "Lors d’une démonstration client, il est important de :",
+        options: [
+          "Parler clairement",
+          "Tourner le dos au client",
+          "Montrer les gestes lentement",
+          "Garder le plan de travail propre"
+        ],
+        correct: [0, 2, 3],
+        explain: "Une bonne démonstration repose sur la clarté, la visibilité des gestes et la propreté du poste."
+      },
+      {
+        theme: "Présentation",
+        question: "Quel élément améliore immédiatement la perception du cocktail ?",
+        options: [
+          "Des traces sur le verre",
+          "Une décoration soignée",
+          "Un dosage approximatif",
+          "Une verrerie adaptée"
+        ],
+        correct: [1, 3],
+        explain: "La verrerie et la décoration ont un impact direct sur l’image du cocktail."
+      },
+      {
+        theme: "Présentation",
+        question: "Pourquoi la posture du mixologue est-elle importante ?",
+        options: [
+          "Elle remplace la recette",
+          "Elle inspire confiance",
+          "Elle améliore l’hygiène visuelle",
+          "Elle facilite les gestes"
+        ],
+        correct: [1, 2, 3],
+        explain: "Une bonne posture rassure, améliore la lisibilité du service et facilite l’exécution."
+      },
+      {
+        theme: "Présentation",
+        question: "Quel comportement est à éviter pendant le service ?",
+        options: [
+          "Parler agressivement au client",
+          "Nettoyer entre deux cocktails",
+          "Garder un sourire naturel",
+          "Manipuler les verres par le bord"
+        ],
+        correct: [0, 3],
+        explain: "L’agressivité et la mauvaise manipulation des verres nuisent fortement à l’image du service."
+      },
+      {
+        theme: "Présentation",
+        question: "Quels éléments valorisent le mieux une démonstration de mixologie ?",
+        options: [
+          "Un bon éclairage",
+          "Une verrerie cohérente",
+          "Des gestes lents et visibles",
+          "Un plan de travail encombré"
+        ],
+        correct: [0, 1, 2],
+        explain: "L’éclairage, la verrerie et la lisibilité des gestes renforcent la qualité perçue."
+      },
+
+      {
+        theme: "Connaissances générales",
+        question: "Quel alcool est la base classique du Mojito ?",
+        options: [
+          "Vodka",
+          "Gin",
+          "Rhum blanc",
+          "Tequila"
+        ],
+        correct: [2],
+        explain: "Le Mojito est classiquement préparé avec du rhum blanc."
+      },
+      {
+        theme: "Connaissances générales",
+        question: "Le Triple Sec appartient à quelle famille ?",
+        options: [
+          "Liqueurs d’orange",
+          "Whiskies",
+          "Bitters",
+          "Sirops"
+        ],
+        correct: [0],
+        explain: "Le Triple Sec est une liqueur d’orange."
+      },
+      {
+        theme: "Connaissances générales",
+        question: "Quel ingrédient apporte généralement l’acidité dans un cocktail ?",
+        options: [
+          "Le sucre",
+          "Le citron",
+          "Le lait",
+          "La glace"
+        ],
+        correct: [1],
+        explain: "Le citron est un des principaux ingrédients acides en mixologie."
+      },
+      {
+        theme: "Connaissances générales",
+        question: "Le Negroni est généralement servi dans :",
+        options: [
+          "Un verre Collins",
+          "Un verre Old Fashioned",
+          "Une flûte",
+          "Un verre Martini"
+        ],
+        correct: [1],
+        explain: "Le Negroni est généralement servi dans un verre Old Fashioned."
+      },
+      {
+        theme: "Organisation & tenue du bar",
+        question: "Pourquoi préparer les garnitures à l’avance ?",
+        options: [
+          "Gagner du temps",
+          "Assurer une régularité",
+          "Décorer au hasard",
+          "Fluidifier le service"
+        ],
+        correct: [0, 1, 3],
+        explain: "La préparation en amont améliore la rapidité et la régularité du service."
+      },
+      {
+        theme: "Organisation & tenue du bar",
+        question: "Quel élément doit toujours être disponible au bar ?",
+        options: [
+          "Des verres sales",
+          "Des torchons propres",
+          "Des glaçons",
+          "Des déchets sur le plan de travail"
+        ],
+        correct: [1, 2],
+        explain: "Un bar bien tenu doit disposer de torchons propres et de glace suffisante."
+      },
+      {
+        theme: "Organisation & tenue du bar",
+        question: "Une bonne mise en place permet :",
+        options: [
+          "Un service plus rapide",
+          "Moins d’erreurs",
+          "Plus de désordre",
+          "Une meilleure expérience client"
+        ],
+        correct: [0, 1, 3],
+        explain: "La mise en place réduit les erreurs et augmente l’efficacité du service."
+      },
+      {
+        theme: "Organisation & tenue du bar",
+        question: "Quand faut-il nettoyer son poste de travail ?",
+        options: [
+          "Uniquement à la fermeture",
+          "Entre plusieurs cocktails",
+          "Régulièrement pendant le service",
+          "Seulement si le client regarde"
+        ],
+        correct: [1, 2],
+        explain: "Le nettoyage doit être régulier pendant le service, pas uniquement à la fin."
+      },
+
+      {
+        theme: "Marketing & vente",
+        question: "Quel argument valorise le mieux un sirop premium ?",
+        options: [
+          "La qualité des ingrédients",
+          "Le prix le plus bas",
+          "La facilité d’utilisation",
+          "La régularité du goût"
+        ],
+        correct: [0, 2, 3],
+        explain: "Un bon argument de vente parle de qualité, d’usage et de régularité."
+      },
+      {
+        theme: "Marketing & vente",
+        question: "Le rôle d’un mixologue dans un CHR est aussi de :",
+        options: [
+          "Ignorer les préférences du client",
+          "Créer une expérience",
+          "Conseiller le client",
+          "Valoriser les produits"
+        ],
+        correct: [1, 2, 3],
+        explain: "Le mixologue conseille, anime l’expérience et aide à faire rayonner le produit."
+      },
+      {
+        theme: "Marketing & vente",
+        question: "Une bonne recommandation client doit être :",
+        options: [
+          "Adaptée aux goûts du client",
+          "Rapide et confuse",
+          "Personnalisée",
+          "Claire"
+        ],
+        correct: [0, 2, 3],
+        explain: "Une recommandation utile est claire, personnalisée et alignée avec les goûts du client."
+      },
+      {
+        theme: "Marketing & vente",
+        question: "Pourquoi proposer une signature cocktail ?",
+        options: [
+          "Créer une identité",
+          "Différencier l’établissement",
+          "Compliquer le menu inutilement",
+          "Attirer la curiosité"
+        ],
+        correct: [0, 1, 3],
+        explain: "Une signature cocktail renforce l’identité et la différenciation d’un établissement."
+      },
+      {
+        theme: "Hygiène & sécurité",
+        question: "Quelles pratiques relèvent de l’hygiène derrière un bar ?",
+        options: [
+          "Utiliser des ustensiles propres",
+          "Réutiliser un verre sale pour gagner du temps",
+          "Conserver les ingrédients correctement",
+          "Se laver les mains régulièrement"
+        ],
+        correct: [0, 2, 3],
+        explain: "L’hygiène repose sur la propreté des mains, du matériel et des ingrédients."
+      },
+      {
+        theme: "Hygiène & sécurité",
+        question: "Quels comportements réduisent les risques pendant le service ?",
+        options: [
+          "Laisser des liquides au bord du comptoir",
+          "Maintenir le poste dégagé",
+          "Éviter les éclaboussures inutiles",
+          "Utiliser un couteau avec attention"
+        ],
+        correct: [1, 2, 3],
+        explain: "Sécurité rime avec ordre, vigilance et contrôle des gestes."
+      },
+      {
+        theme: "Hygiène & sécurité",
+        question: "Que faut-il faire avec un fruit ou un ingrédient qui semble abîmé ?",
+        options: [
+          "Le mélanger quand même pour masquer le problème",
+          "Le retirer du service",
+          "Vérifier les autres éléments du lot",
+          "Le remplacer si nécessaire"
+        ],
+        correct: [1, 2, 3],
+        explain: "Un ingrédient douteux ne doit pas être servi."
+      },
+      {
+        theme: "Service & relation client",
+        question: "Face à un client hésitant, il faut :",
+        options: [
+          "Poser des questions sur ses goûts",
+          "Être à l’écoute",
+          "Expliquer les saveurs",
+          "Imposer un cocktail"
+        ],
+        correct: [0, 1, 2],
+        explain: "La recommandation doit partir de l’écoute des goûts et d’une explication claire."
+      },
+      {
+        theme: "Service & relation client",
+        question: "Un bon service client repose sur :",
+        options: [
+          "Le respect",
+          "La rapidité",
+          "L’indifférence",
+          "La cohérence"
+        ],
+        correct: [0, 1, 3],
+        explain: "Le client attend un service respectueux, rapide et cohérent."
+      },
+      {
+        theme: "Service & relation client",
+        question: "Que faire si un client n’aime pas son cocktail ?",
+        options: [
+          "Rester professionnel",
+          "Proposer une solution",
+          "Ignorer sa remarque",
+          "Écouter son retour"
+        ],
+        correct: [0, 1, 3],
+        explain: "L’écoute et la recherche d’une solution font partie d’un bon service."
+      },
+      {
+        theme: "Service & relation client",
+        question: "Pourquoi le sourire est-il important en service ?",
+        options: [
+          "Il améliore l’accueil",
+          "Il remplace la qualité du cocktail",
+          "Il améliore l’expérience",
+          "Il rassure le client"
+        ],
+        correct: [0, 2, 3],
+        explain: "Le sourire facilite l’accueil et améliore la perception de l’expérience."
+      }
+    ];
+
+    const THEME_ORDER = [
+      "Mixologie",
+      "Présentation",
+      "Connaissances générales",
+      "Organisation & tenue du bar",
+      "Marketing & vente",
+      "Hygiène & sécurité",
+      "Service & relation client"
+    ];
+
+    const quizEl = document.getElementById("quiz");
+    const resultsEl = document.getElementById("results");
+    const themeBarsEl = document.getElementById("themeBars");
+    const adviceEl = document.getElementById("advice");
+    const quickReadEl = document.getElementById("quickRead");
+    const themePillsEl = document.getElementById("themePills");
+    const progressEl = document.getElementById("progress");
+    const globalScoreEl = document.getElementById("globalScore");
+    const globalLevelEl = document.getElementById("globalLevel");
+    const globalDescEl = document.getElementById("globalDesc");
+
+    const topSubmit = document.getElementById("topSubmit");
+    const bottomSubmit = document.getElementById("bottomSubmit");
+    const resetBtn = document.getElementById("resetBtn");
+    const scrollQuiz = document.getElementById("scrollQuiz");
+    const backTop = document.getElementById("backTop");
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderThemePills() {
+      themePillsEl.innerHTML = THEME_ORDER.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("");
+    }
+
+    function prepareQuizData() {
+      return QUIZ.map((q, idx) => {
+        const paired = q.options.map((opt, optIdx) => ({ opt, optIdx }));
+        const shuffled = shuffleArray(paired);
+        const newOptions = shuffled.map(x => x.opt);
+        const remap = new Map();
+        shuffled.forEach((item, newIndex) => remap.set(item.optIdx, newIndex));
+        const newCorrect = q.correct.map(oldIdx => remap.get(oldIdx)).sort((a, b) => a - b);
+        return {
+          id: idx,
+          theme: q.theme,
+          question: q.question,
+          options: newOptions,
+          correct: newCorrect,
+          explain: q.explain
+        };
+      });
+    }
+
+    let ACTIVE_QUIZ = prepareQuizData();
+
+    function renderQuiz() {
+      quizEl.innerHTML = ACTIVE_QUIZ.map((q, idx) => {
+        return `
+          <article class="question" data-index="${idx}" data-theme="${escapeHtml(q.theme)}">
+            <div class="question-header">
+              <div>
+                <div class="qnum">Question ${idx + 1}</div>
+                <p class="qtext">${escapeHtml(q.question)}</p>
+              </div>
+              <div class="theme-tag">${escapeHtml(q.theme)}</div>
+            </div>
+
+            <div class="options">
+              ${q.options.map((opt, optIdx) => `
+                <label class="opt">
+                  <input type="checkbox" data-q="${idx}" data-o="${optIdx}" />
+                  <span>${escapeHtml(opt)}</span>
+                </label>
+              `).join("")}
+            </div>
+
+            <div class="feedback" id="fb-${idx}"></div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function resetQuiz() {
+      ACTIVE_QUIZ = prepareQuizData();
+      renderQuiz();
+      document.querySelectorAll(".feedback").forEach(fb => {
+        fb.className = "feedback";
+        fb.innerHTML = "";
+        fb.style.display = "none";
+      });
+      resultsEl.classList.remove("active");
+      progressEl.style.width = "0%";
+      globalScoreEl.textContent = "—";
+      globalLevelEl.textContent = "";
+      globalDescEl.textContent = "";
+      themeBarsEl.innerHTML = "";
+      adviceEl.innerHTML = "";
+      quickReadEl.innerHTML = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function gradeQuiz() {
+      const total = ACTIVE_QUIZ.length;
+      let answered = 0;
+      let rawPoints = 0;
+
+      const themeStats = Object.fromEntries(
+        THEME_ORDER.map(t => [t, { earned: 0, max: 0 }])
+      );
+
+      ACTIVE_QUIZ.forEach((q, idx) => {
+        const checked = [...document.querySelectorAll(`input[data-q="${idx}"]:checked`)]
+          .map(el => Number(el.dataset.o))
+          .sort((a, b) => a - b);
+
+        if (checked.length > 0) answered += 1;
+
+        const exact = arraysEqual(checked, q.correct);
+
+        if (exact) {
+          rawPoints += 1;
+          themeStats[q.theme].earned += 1;
+        }
+
+        themeStats[q.theme].max += 1;
+
+        const fb = document.getElementById(`fb-${idx}`);
+        const correctText = q.correct.map(i => q.options[i]).join(" ; ");
+        if (exact) {
+          fb.className = "feedback good";
+          fb.innerHTML = `<strong>Correct.</strong> ${escapeHtml(q.explain)}`;
+        } else {
+          fb.className = "feedback bad";
+          fb.innerHTML = `<strong>À revoir.</strong> Réponse(s) attendue(s) : ${escapeHtml(correctText)}.<br>${escapeHtml(q.explain)}`;
+        }
+        fb.style.display = "block";
+      });
+
+      const overallPct = Math.round((rawPoints / total) * 100);
+      const answeredPct = Math.round((answered / total) * 100);
+
+      const level = getLevel(overallPct);
+      globalScoreEl.textContent = `${overallPct} / 100`;
+      globalLevelEl.textContent = level.title;
+      globalDescEl.textContent = level.desc;
+
+      themeBarsEl.innerHTML = THEME_ORDER.map(theme => {
+        const s = themeStats[theme];
+        const pct = Math.round((s.earned / s.max) * 100);
+        return `
+          <div class="bar-row">
+            <div class="bar-head">
+              <span>${escapeHtml(theme)}</span>
+              <span>${pct}%</span>
+            </div>
+            <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+          </div>
+        `;
+      }).join("");
+
+      const ranked = THEME_ORDER
+        .map(theme => ({
+          theme,
+          pct: Math.round((themeStats[theme].earned / themeStats[theme].max) * 100)
+        }))
+        .sort((a, b) => a.pct - b.pct);
+
+      adviceEl.innerHTML = ranked.slice(0, 3).map(t => buildAdvice(t.theme, t.pct)).join("");
+      quickReadEl.innerHTML = buildQuickRead(themeStats, overallPct, answeredPct);
+
+      resultsEl.classList.add("active");
+      resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      progressEl.style.width = `${answeredPct}%`;
+    }
+
+    function arraysEqual(a, b) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+      return true;
+    }
+
+    function getLevel(pct) {
+      if (pct >= 85) {
+        return {
+          title: "Très bon niveau",
+          desc: "Le profil maîtrise déjà de nombreux fondamentaux. La formation peut aller vite sur les bases et se concentrer sur la précision et la signature produit."
+        };
+      }
+      if (pct >= 70) {
+        return {
+          title: "Niveau opérationnel",
+          desc: "Les fondamentaux sont présents. Il faudra surtout consolider certains automatismes et harmoniser la pratique."
+        };
+      }
+      if (pct >= 50) {
+        return {
+          title: "Niveau en construction",
+          desc: "Les bases existent, mais plusieurs domaines doivent être renforcés avant une autonomie complète."
+        };
+      }
+      return {
+        title: "Niveau débutant / à structurer",
+        desc: "Une remise à niveau complète est recommandée : techniques, organisation, présentation et logique de service."
+      };
+    }
+
+    function buildAdvice(theme, pct) {
+      const map = {
+        "Mixologie": "Revoir les techniques de base : shaker, jigger, muddle, strainer et cuillère à mélanger. Insister sur le “pourquoi” de chaque geste et sur la précision des dosages.",
+        "Présentation": "Travailler la posture, la voix, la gestuelle et la lisibilité de la démonstration. Une présentation claire et propre rassure immédiatement un client ou un apprenant.",
+        "Connaissances générales": "Renforcer le vocabulaire de base, les principes d’équilibre d’un cocktail et les repères simples de la discipline. Comprendre avant de reproduire.",
+        "Organisation & tenue du bar": "Revoir la mise en place, le rangement des outils, la préparation des garnitures et la logique du poste de travail pour gagner en vitesse et en propreté.",
+        "Marketing & vente": "Formuler des arguments plus orientés bénéfice client : régularité, facilité d’utilisation, qualité du résultat final, gain de temps et valeur pour le CHR.",
+        "Hygiène & sécurité": "Revenir sur les règles simples : mains propres, matériel propre, ingrédients sains, poste dégagé et gestion rigoureuse des risques.",
+        "Service & relation client": "Renforcer l’écoute, la courtoisie, la clarté des explications et la cohérence du service. La technique ne suffit pas sans une bonne relation client."
+      };
+
+      let suffix = "";
+      if (pct >= 80) suffix = " Niveau solide : consolider avec des mises en situation plus rapides.";
+      else if (pct >= 60) suffix = " Niveau intermédiaire : quelques rappels ciblés suffiront.";
+      else suffix = " Priorité de formation : reprendre cette dimension pas à pas, avec exercices pratiques.";
+
+      return `
+        <div class="advice-item">
+          <strong>${escapeHtml(theme)} — ${pct}%</strong><br>
+          ${escapeHtml(map[theme])}${escapeHtml(suffix)}
+        </div>
+      `;
+    }
+
+    function buildQuickRead(themeStats, overallPct, answeredPct) {
+      const weakest = THEME_ORDER
+        .map(theme => ({
+          theme,
+          pct: Math.round((themeStats[theme].earned / themeStats[theme].max) * 100)
+        }))
+        .sort((a, b) => a.pct - b.pct)[0];
+
+      return `
+        <p class="score-sub"><strong>Réponses tentées :</strong> ${answeredPct}%</p>
+        <p class="score-sub"><strong>Score global estimé :</strong> ${overallPct}%</p>
+        <p class="score-sub"><strong>Point le plus fragile :</strong> ${escapeHtml(weakest.theme)} (${weakest.pct}%)</p>
+        <p class="score-sub">
+          La lecture détaillée des thèmes permet de repérer rapidement les domaines à renforcer avant la formation.
+        </p>
+      `;
+    }
+
+    function scrollToQuiz() {
+      document.querySelector("main").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    renderThemePills();
+    renderQuiz();
+
+    topSubmit.addEventListener("click", gradeQuiz);
+    bottomSubmit.addEventListener("click", gradeQuiz);
+    resetBtn.addEventListener("click", resetQuiz);
+    scrollQuiz.addEventListener("click", scrollToQuiz);
+    backTop.addEventListener("click", scrollToTop);
+
+    progressEl.style.width = "0%";
+  </script>
+</body>
+</html>
